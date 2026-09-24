@@ -74,6 +74,7 @@ Deno.serve(async (req) => {
   // models a few times with a growing pause (0s, 3s, 6s) before giving up.
   let res: Response | null = null
   let fatal = false
+  const failures: string[] = [] // "model:status", returned so failures can be diagnosed without log access
   for (let round = 0; round < ROUNDS && !res && !fatal; round++) {
     if (round) await new Promise((r) => setTimeout(r, round * 3000))
     for (const model of MODELS) {
@@ -83,11 +84,18 @@ Deno.serve(async (req) => {
         body: payload,
       })
       if (r.ok) { res = r; break }
-      console.error('gemini failed', round, model, r.status, await r.text())
+      const text = await r.text()
+      console.error('gemini failed', round, model, r.status, text)
+      failures.push(`${model}:${r.status}`)
       if (FATAL.has(r.status)) { fatal = true; break }
     }
   }
-  if (!res) return json(req, { error: 'Our verification service is busy right now. Please keep this page open, wait a minute and click Verify again.' }, 502)
+  if (!res) return json(req, {
+    error: fatal
+      ? 'Verification is temporarily unavailable. Please contact us on WhatsApp and we will verify you manually.'
+      : 'Our verification service is busy right now. Please keep this page open, wait a minute and click Verify again.',
+    detail: failures,
+  }, 502)
 
   let verdict: { linkedin: { is_infusiotech_page: boolean; is_following: boolean }; instagram: { is_infusiotech_page: boolean; is_following: boolean } }
   try {
