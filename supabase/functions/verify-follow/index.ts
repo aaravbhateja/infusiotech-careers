@@ -4,7 +4,9 @@ const MAX_ATTEMPTS = 5
 const MAX_B64_LEN = 2_000_000 // ~1.5 MB per image; the browser resizes before upload
 // Tried in order; falls through to the next when a model is overloaded or rate-limited.
 const MODELS = [Deno.env.get('GEMINI_MODEL') ?? 'gemini-flash-latest', 'gemini-3.6-flash', 'gemini-3.1-flash-lite']
-const ROUNDS = 3
+// Two passes (0s, then 3s later). If Gemini still fails the applicant is let through unchecked, so
+// longer retrying would only keep them waiting.
+const ROUNDS = 2
 // Bad key or bad request: retrying won't help. Anything else (503, 429, 404 for a retired model) moves on.
 const FATAL = new Set([400, 401, 403])
 
@@ -71,7 +73,7 @@ Deno.serve(async (req) => {
   })
 
   // Gemini overloads (503) and rate limits (429) are usually brief, so cycle through the
-  // models a few times with a growing pause (0s, 3s, 6s) before giving up.
+  // models twice with a short pause before giving up.
   let res: Response | null = null
   let fatal = false
   const failures: string[] = [] // "model:status", returned so failures can be diagnosed without log access
@@ -90,12 +92,17 @@ Deno.serve(async (req) => {
       if (FATAL.has(r.status)) { fatal = true; break }
     }
   }
-  if (!res) return json(req, {
-    error: fatal
-      ? 'Verification is temporarily unavailable. Please contact us on WhatsApp and we will verify you manually.'
-      : 'Our verification service is busy right now. Please keep this page open, wait a minute and click Verify again.',
-    detail: failures,
-  }, 502)
+  // Gemini unavailable (quota, overload or key problem): don't block enrollment on it. The applicant
+  // moves on with follow_verified set but followed_linkedin/instagram left false, which marks them for
+  // a manual follow check. Hashes are still saved so the same screenshots can't be reused.
+  if (!res) {
+    console.error('follow check skipped, gemini unavailable', fatal, failures)
+    const { error } = await supabase.from('applicants').update({
+      follow_verified: true, linkedin_hash: liHash, instagram_hash: igHash,
+    }).eq('id', a.id)
+    if (error) return json(req, { error: 'Could not save verification. Please try again.' }, 500)
+    return json(req, { ok: true, linkedin: true, instagram: true, unchecked: true, detail: failures })
+  }
 
   let verdict: { linkedin: { is_infusiotech_page: boolean; is_following: boolean }; instagram: { is_infusiotech_page: boolean; is_following: boolean } }
   try {
