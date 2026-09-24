@@ -1,13 +1,20 @@
 import { db, markPaid } from './common.ts'
 import { buildLoiPdf } from './loi.ts'
 import { provisionPortalUser, type PortalAccess } from './portal.ts'
+import { box, esc, layout, list, p, rows } from './email.ts'
 
 const b64 = (bytes: Uint8Array) => {
   let s = ''
   for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000))
   return btoa(s)
 }
-const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
+
+const loginBox = (portal: PortalAccess, url: string) => box(
+  `<div style="font-weight:700;margin-bottom:6px">Your Intern Portal login</div>` +
+  rows([['Portal', `<a href="${esc(url)}" style="color:#2C8C82">${esc(url.replace(/^https?:\/\//, ''))}</a>`], ['Login ID', esc(portal.email)],
+    ['Temporary password', `<span style="font-family:Consolas,Menlo,monospace;font-size:16px;letter-spacing:.5px">${esc(portal.password)}</span>`]]) +
+  `<div style="margin-top:8px;font-size:13px;color:#6B7A86">You'll be asked to set your own password the first time you sign in. Please don't share this email.</div>`,
+)
 
 export const loiRef = (id: string, when: Date) => `ITC-${when.getFullYear()}-${id.replace(/-/g, '').slice(0, 6).toUpperCase()}`
 
@@ -29,26 +36,27 @@ export async function sendMail(a: any, portal?: PortalAccess) {
   if (!key || !from) throw new Error('Email is not configured (RESEND_API_KEY / MAIL_FROM)')
   const { bytes, filename } = await makeLoi(a)
   const reply = Deno.env.get('MAIL_REPLY_TO') ?? Deno.env.get('COMPANY_EMAIL') ?? 'infusiotech@gmail.com'
-  const name = esc(a.first_name)
   const portalUrl = Deno.env.get('PORTAL_URL') ?? 'https://infusiotech.careers/portal'
   const portalBlock = !portal ? '' : portal.password
-    ? `<div style="border:1px solid #2c8c82;border-radius:10px;padding:14px 16px;margin:16px 0;background:#f2faf9">
-    <p style="margin:0 0 6px"><b>Your Intern Portal login</b></p>
-    <p style="margin:0">Portal: <a href="${esc(portalUrl)}">${esc(portalUrl)}</a><br>
-    ID: <b>${esc(portal.email)}</b><br>
-    Temporary password: <b style="font-family:monospace;font-size:15px">${esc(portal.password)}</b></p>
-    <p style="margin:8px 0 0;font-size:13px;color:#5b6b75">For your security you will be asked to set a new password the first time you sign in. Please do not share this email.</p></div>`
-    : `<p>Your Intern Portal is at <a href="${esc(portalUrl)}">${esc(portalUrl)}</a>. Sign in with your registered email and the password you set.</p>`
-  const html = `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#14202b;line-height:1.6">
-    <h2 style="color:#2c8c82;margin-bottom:4px">Welcome to InfusioTech Careers, ${name}!</h2>
-    <p>Your payment has been received and your seat in the <b>3-Month Training + Internship Program</b> is confirmed.</p>
-    <p>Your <b>Letter of Intent</b> is attached to this email as a PDF. It has your program details, your reporting managers and the terms of the program. Please read it and reply to this email with <b>"I accept"</b>.</p>
-    ${portalBlock}
-    <p><b>What happens next</b></p>
-    <ul><li>Your program start date is your payment date, as stated in the letter. We will share the schedule and joining details by email.</li>
-    <li>Keep following our <a href="https://www.linkedin.com/company/infusiotech-solutions/">LinkedIn</a> and <a href="https://www.instagram.com/infusiotechsolutions/">Instagram</a> pages for updates.</li></ul>
-    <p>Questions? Just reply to this email.</p>
-    <p>Regards,<br>Team InfusioTech</p></div>`
+    ? loginBox(portal, portalUrl)
+    : p(`Your Intern Portal is at <a href="${esc(portalUrl)}" style="color:#2C8C82">${esc(portalUrl)}</a>. Sign in with your registered email and the password you set.`)
+  const html = layout({
+    preheader: 'Your seat is confirmed. Your Letter of Intent and portal login are inside.',
+    heading: `Welcome to InfusioTech Careers, ${a.first_name}!`,
+    body:
+      p('Your payment has been received and your seat in the <b>3-Month Training + Internship Program</b> is confirmed. We\'re glad to have you on board.') +
+      box(`<div style="font-weight:700;margin-bottom:4px">&#128206; Your Letter of Intent is attached</div>
+        It has your program details, your reporting managers and the program terms. Please read it and <b>reply to this email with "I accept"</b>.`) +
+      portalBlock +
+      `<div style="font:700 15px/1.4 'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#14202B;margin:8px 0 8px">What happens next</div>` +
+      list([
+        'Your program starts on your payment date, as stated in the letter.',
+        'Sign in to the Intern Portal to mark attendance, see tasks and watch lectures.',
+        'We\'ll share the schedule and joining details by email.',
+        'Keep following our <a href="https://www.linkedin.com/company/infusiotech-solutions/" style="color:#2C8C82">LinkedIn</a> and <a href="https://www.instagram.com/infusiotechsolutions/" style="color:#2C8C82">Instagram</a> for updates.',
+      ]),
+    cta: { label: 'Open Intern Portal', url: portalUrl },
+  }, reply)
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
@@ -96,15 +104,12 @@ export async function sendPortalMail(a: any, portal: PortalAccess) {
   if (!key || !from || !portal.password) throw new Error('Email is not configured or no password was issued')
   const url = Deno.env.get('PORTAL_URL') ?? 'https://infusiotech.careers/portal'
   const reply = Deno.env.get('MAIL_REPLY_TO') ?? Deno.env.get('COMPANY_EMAIL') ?? 'infusiotech@gmail.com'
-  const html = `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#14202b;line-height:1.6">
-    <h2 style="color:#2c8c82;margin-bottom:4px">Your InfusioTech Intern Portal is live, ${esc(a.first_name)}!</h2>
-    <p>Use the portal to mark your daily attendance, see your tasks, track your progress and view scheduled meetings.</p>
-    <div style="border:1px solid #2c8c82;border-radius:10px;padding:14px 16px;margin:16px 0;background:#f2faf9">
-    <p style="margin:0">Portal: <a href="${esc(url)}">${esc(url)}</a><br>
-    ID: <b>${esc(portal.email)}</b><br>
-    Temporary password: <b style="font-family:monospace;font-size:15px">${esc(portal.password)}</b></p>
-    <p style="margin:8px 0 0;font-size:13px;color:#5b6b75">You will be asked to set a new password the first time you sign in. Please do not share this email.</p></div>
-    <p>Questions? Just reply to this email.</p><p>Regards,<br>Team InfusioTech</p></div>`
+  const html = layout({
+    preheader: 'Your login details for the InfusioTech Intern Portal.',
+    heading: `Your Intern Portal is live, ${a.first_name}!`,
+    body: p('Use the portal to mark your daily attendance, see your tasks, watch lectures, track your progress and view scheduled meetings.') + loginBox(portal, url),
+    cta: { label: 'Sign in to the portal', url },
+  }, reply)
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
