@@ -82,3 +82,14 @@
 .upload:hover{ background: var(--accent2-soft); }
 .file-name{ font-size: 13px; color: var(--muted); word-break: break-all; }
 .file-bad{ display: inline-flex; align-items: center; gap: 6px; color: #DC2626; font-size: 13px; }
+
+/* Coupon on the payment step */
+.bill .was{ font-size: 18px; color: var(--muted); }
+.bill .off{ color: var(--accent2); font-weight: 700; }
+.bill .code{ font-family: 'IBM Plex Mono', monospace; font-size: 13px; padding: 2px 8px; border-radius: 6px; background: var(--accent2-soft); color: var(--accent2); margin-left: 4px; }
+.coupon{ margin: -4px 0 18px; }
+.coupon label{ margin-bottom: 0; }
+.coupon-row{ display: flex; gap: 10px; }
+.coupon-row input{ flex: 1; min-width: 0; text-transform: uppercase; letter-spacing: .04em; }
+.coupon-row .btn{ flex: none; }
+.coupon-ok{ display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 13px; color: var(--accent2); }

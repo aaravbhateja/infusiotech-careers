@@ -3,7 +3,9 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, Upload, XCircle, ExternalLink } from 'lucide-react'
 import { Ambient3D } from '../../components/ui/ambient-3d'
 import { LINKEDIN_URL, INSTAGRAM_URL, PROGRAM_PRICE, PROGRAM_NAME, EMAIL } from '../../data/site'
-import { register, createOrder, verifyPayment, verifyFollow, imageToDataUrl, loadRazorpay } from '../../lib/api'
+import { register, createOrder, previewCoupon, verifyPayment, verifyFollow, imageToDataUrl, loadRazorpay } from '../../lib/api'
+
+const rupees = (paise) => `₹${(paise / 100).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`
 
 const STEP_LABELS = ['Your details', 'Follow us', 'Payment']
 
@@ -53,6 +55,10 @@ export default function Enroll() {
   const [attempted, setAttempted] = useState(false)
   const [shots, setShots] = useState({ li: null, ig: null }) // { name, dataUrl }
   const [opened, setOpened] = useState({ li: false, ig: false }) // which follow pages they've opened
+  const [couponInput, setCouponInput] = useState('')
+  const [couponError, setCouponError] = useState('')
+  const [checking, setChecking] = useState(false)
+  const [deal, setDeal] = useState(null) // { coupon, price, discount, amount } in paise, once a coupon is applied
   const [result, setResult] = useState(null) // { linkedin: bool, instagram: bool } from the last failed check
   const [applicantId, setApplicantId] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -105,10 +111,18 @@ export default function Enroll() {
     } catch (err) { setError(err.message) } finally { setBusy(false) }
   }
 
+  const applyCoupon = async (e) => {
+    e.preventDefault()
+    if (!couponInput.trim()) return
+    setChecking(true); setCouponError('')
+    try { setDeal(await previewCoupon(applicantId, couponInput.trim())) } catch (err) { setCouponError(err.message) } finally { setChecking(false) }
+  }
+  const removeCoupon = () => { setDeal(null); setCouponInput(''); setCouponError('') }
+
   const pay = async () => {
     setBusy(true); setError('')
     try {
-      const [order] = await Promise.all([createOrder(applicantId), loadRazorpay()])
+      const [order] = await Promise.all([createOrder(applicantId, deal?.coupon), loadRazorpay()])
       const rzp = new window.Razorpay({
         key: order.keyId,
         amount: order.amount,
@@ -238,9 +252,25 @@ export default function Enroll() {
               <div>
                 <h2>Complete your enrollment</h2>
                 <div className="bill">
-                  <div><span>{PROGRAM_NAME} · 3-month Training + Internship</span><b>₹{PROGRAM_PRICE.toLocaleString('en-IN')}</b></div>
+                  <div><span>{PROGRAM_NAME} · 3-month Training + Internship</span>{deal ? <s className="was">{rupees(deal.price)}</s> : <b>₹{PROGRAM_PRICE.toLocaleString('en-IN')}</b>}</div>
+                  {deal && <>
+                    <div className="bill-line"><span>Coupon <span className="code">{deal.coupon}</span></span><span className="off">−{rupees(deal.discount)}</span></div>
+                    <div><span>Total payable</span><b>{rupees(deal.amount)}</b></div>
+                  </>}
                   <small>One-time fee. Secure payment via Razorpay (UPI, cards, netbanking, wallets).</small>
                 </div>
+                <form className="coupon field" onSubmit={applyCoupon}>
+                  <label htmlFor="coupon">Have a coupon code?</label>
+                  <div className="coupon-row">
+                    <input id="coupon" value={couponInput} onChange={(e) => { setCouponInput(e.target.value.toUpperCase()); setCouponError('') }}
+                      placeholder="Enter code" autoComplete="off" maxLength={30} disabled={busy || Boolean(deal)} aria-invalid={Boolean(couponError)} />
+                    {deal
+                      ? <button className="btn btn-ghost" type="button" onClick={removeCoupon} disabled={busy}>Remove</button>
+                      : <button className="btn btn-ghost" type="submit" disabled={busy || checking || !couponInput.trim()}>{checking ? 'Checking…' : 'Apply'}</button>}
+                  </div>
+                  {couponError && <p className="field-error" role="alert">{couponError}</p>}
+                  {deal && <p className="coupon-ok"><CheckCircle2 size={14} /> Coupon applied. You save {rupees(deal.discount)}.</p>}
+                </form>
                 {error && <p className="field-error" role="alert">{error}</p>}
                 <div className="btn-row">
                   <button className="btn btn-ghost" type="button" onClick={() => goto(1)} disabled={busy}>Back</button>

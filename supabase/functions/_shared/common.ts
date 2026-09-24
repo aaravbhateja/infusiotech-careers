@@ -46,8 +46,15 @@ export function safeEqual(a: string, b: string) {
 }
 
 export async function markPaid(orderId: string, paymentId: string) {
-  const { error } = await db().from('applicants')
+  const { data, error } = await db().from('applicants')
     .update({ status: 'paid', payment_id: paymentId, paid_at: new Date().toISOString() })
-    .eq('order_id', orderId).neq('status', 'paid')
+    .eq('order_id', orderId).neq('status', 'paid').select('coupon_code')
   if (error) throw error
+  // Only the call that actually flipped the row to paid counts the coupon, so the webhook and
+  // checkout callback can't both count it.
+  const code = data?.[0]?.coupon_code
+  if (code) {
+    const { error: e } = await db().rpc('redeem_coupon', { p_code: code })
+    if (e) console.error('coupon redeem failed', code, e)
+  }
 }

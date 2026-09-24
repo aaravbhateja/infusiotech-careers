@@ -14,7 +14,8 @@ async function call(fn, body) {
 }
 
 export const register = (form) => call('register', form)
-export const createOrder = (id) => call('create-order', { id })
+export const createOrder = (id, coupon) => call('create-order', { id, coupon })
+export const previewCoupon = (id, coupon) => call('create-order', { id, coupon, preview: true })
 export const verifyPayment = (payload) => call('verify-payment', payload)
 export const verifyFollow = (payload) => call('verify-follow', payload)
 
