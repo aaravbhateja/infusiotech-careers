@@ -42,14 +42,16 @@ export async function sendMail(a: any) {
     preheader: 'Your seat is confirmed. Your Letter of Intent is attached.',
     heading: `Welcome to InfusioTech Careers, ${a.first_name}!`,
     body:
-      p('Your payment has been received and your seat in the <b>3-Month Training + Internship Program</b> is confirmed. We\'re glad to have you on board.') +
+      p('Your payment has been received and your seat in <b>Spec-Driven Web Development with AI</b>, our 3-month Training + Internship Program, is confirmed. We\'re glad to have you on board.') +
       box(`<div style="font-weight:700;margin-bottom:4px">&#128206; Your Letter of Intent is attached</div>
-        It has your program details, your reporting managers and the program terms. Please read it and <b>reply to this email with "I accept"</b>.`) +
+        It has your program details, your L1 and L2 managers and the program terms. Please read it and <b>reply to this email with "I accept"</b>.`) +
       `<div style="font:700 15px/1.4 'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#14202B;margin:8px 0 8px">What happens next</div>` +
       list([
-        'Your program starts on your payment date, as stated in the letter.',
+        'Your program starts on your payment date, as stated in the letter: 2 months of training, then a 1-month internship on industry projects.',
+        'Our HR team will connect with you to complete your onboarding, and you\'ll be assigned mentors alongside your L1 and L2 managers.',
         'Your Intern Portal login ID and password arrive in a separate email. Use the portal to mark attendance, see tasks and watch lectures.',
-        'We\'ll share the schedule and joining details by email.',
+        'We\'ll share the schedule for meetings, webinars and workshops with industry experts by email and in your portal.',
+        'You\'ll receive a certificate on completing the training and another on completing the internship.',
         'Keep following our <a href="https://www.linkedin.com/company/infusiotech-solutions/" style="color:#2C8C82">LinkedIn</a> and <a href="https://www.instagram.com/infusiotechsolutions/" style="color:#2C8C82">Instagram</a> for updates.',
       ]),
     cta: { label: 'Open Intern Portal', url: portalUrl },
@@ -58,7 +60,7 @@ export async function sendMail(a: any) {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from, to: [a.email], reply_to: reply, subject: 'Your Letter of Intent - InfusioTech Careers Training & Internship',
+      from, to: [a.email], reply_to: reply, subject: 'Your Letter of Intent - Spec-Driven Web Development with AI | InfusioTech Careers',
       html, attachments: [{ filename, content: b64(bytes) }],
     }),
   })

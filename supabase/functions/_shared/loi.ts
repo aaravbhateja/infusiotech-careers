@@ -109,23 +109,25 @@ export async function buildLoiPdf(d: LoiInput): Promise<Uint8Array> {
   para(`${d.firstName} ${d.lastName}`, { font: bold, gap: 0 })
   para(`${d.college}`, { gap: 0 })
   para(`${d.state}, ${d.country}`, { gap: 10 })
-  para('Subject: Letter of Intent - Training & Internship Program, InfusioTech Careers', { font: bold, gap: 8 })
+  para('Subject: Letter of Intent - Spec-Driven Web Development with AI (Training & Internship Program), InfusioTech Careers', { font: bold, gap: 8 })
   para(`Dear ${d.firstName},`, { gap: 6 })
-  para(`We are pleased to confirm your enrollment in the InfusioTech Careers Training & Internship Program on behalf of ${c.name} ("the Company"). We have received your program fee of Rs. ${d.amountInr.toLocaleString('en-IN')} (Payment ID: ${d.paymentId}). The details of the program are set out below:`, { gap: 8 })
+  para(`We are pleased to confirm your enrollment in the InfusioTech Careers Spec-Driven Web Development with AI Training & Internship Program on behalf of ${c.name} ("the Company"). We have received your program fee of Rs. ${d.amountInr.toLocaleString('en-IN')} (Payment ID: ${d.paymentId}). The details of the program are set out below:`, { gap: 8 })
 
-  row('Program:', '3-Month Training + Internship Program')
-  row('Duration:', '3 months: 2 months of training followed by 1 month of industry internship')
+  row('Program:', 'Spec-Driven Web Development with AI')
+  row('Duration:', '3 months: 2 months of training followed by 1 month of internship')
   row('Start date:', `${dateStr} (date of payment)`)
   row('Mode:', 'Online')
   row('Reporting to:', `L1 Manager - ${c.l1}`)
   row('', `L2 Manager - ${c.l2}`)
+  row('Mentors:', 'Assigned during onboarding')
   y -= 10
 
   const terms = [
-    'Program structure: the first two months consist of structured training in your chosen track. In the final month you will work on industry-level tasks under the guidance of your reporting managers.',
+    'Program structure: the first two months consist of training in spec-driven web development with AI, delivered through lectures, meetings, webinars and workshops with industry experts and the tech team of the Company. In the final month you will work on industry projects under the guidance of your reporting managers and mentors.',
+    'Onboarding: from day 1 you will be onboarded into the systems of the Company, connected to the HR team, and assigned your L1 and L2 managers and mentors.',
     'Schedule: session timings, assignments and deliverables will be shared by your managers. You are expected to attend sessions regularly and complete the assigned work on time.',
     'Nature of engagement: this program is a learning and internship engagement. It is not an offer of employment, does not create an employer-employee relationship, and carries no salary, stipend or guarantee of future employment.',
-    'Certificate: on satisfactory completion of the program you will receive a certificate of completion from the Company.',
+    'Certificates: on satisfactory completion you will receive a training completion certificate for the first two months and an internship completion certificate for the internship month.',
     'Confidentiality: you must keep confidential all project documents, client information, source code, designs, estimates, technology and internal policies of the Company and its clients, during the program and after it ends.',
     'Intellectual property: all work, code, designs and other material you create in the course of the internship on Company or client projects will be the exclusive property of the Company or its clients. You agree to disclose such work to the Company promptly.',
     'Conduct: you will follow the rules and instructions of the Company, behave professionally, and not act in a way that harms the reputation or interests of the Company or its clients. You will not accept gifts or gratification from any party dealing with the Company.',

@@ -11,7 +11,7 @@ export default function Footer() {
               <img src={LOGO_MARK} alt="InfusioTech" className="mark" />
               InfusioTech <span className="brand-sub">Careers</span>
             </Link>
-            <p>Training and industry internships from an IT consultancy working with Indian and international clients.</p>
+            <p>Spec-Driven Web Development with AI: 2 months of training and a 1-month industry internship, from an IT consultancy working with Indian and international clients.</p>
           </div>
           <div>
             <h5>Program</h5>

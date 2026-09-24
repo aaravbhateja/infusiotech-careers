@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CheckCircle2, Briefcase, Camera, Upload, XCircle } from 'lucide-react'
 import { Ambient3D } from '../../components/ui/ambient-3d'
-import { LINKEDIN_URL, INSTAGRAM_URL, PROGRAM_PRICE, EMAIL } from '../../data/site'
+import { LINKEDIN_URL, INSTAGRAM_URL, PROGRAM_PRICE, PROGRAM_NAME, EMAIL } from '../../data/site'
 import { register, createOrder, verifyPayment, verifyFollow, imageToDataUrl, loadRazorpay } from '../../lib/api'
 
 const STEP_LABELS = ['Your details', 'Follow us', 'Payment']
@@ -102,7 +102,7 @@ export default function Enroll() {
         currency: 'INR',
         order_id: order.orderId,
         name: 'InfusioTech Careers',
-        description: '3-Month Training + Internship Program',
+        description: `${PROGRAM_NAME} (3 months)`,
         prefill: { name: order.name, email: order.email, contact: order.phone },
         theme: { color: '#2C8C82' },
         modal: { ondismiss: () => setBusy(false) },
@@ -144,7 +144,7 @@ export default function Enroll() {
         <div className="wrap">
           <div className="eyebrow">Enroll</div>
           <h1>Reserve your seat</h1>
-          <p>Three quick steps to secure your place in the next 3-month Training + Internship batch.</p>
+          <p>Three quick steps to secure your place in the next batch of {PROGRAM_NAME}: 2 months of training and a 1-month internship.</p>
         </div>
       </section>
 
@@ -218,7 +218,7 @@ export default function Enroll() {
               <div>
                 <h2>Complete your enrollment</h2>
                 <div className="bill">
-                  <div><span>3-Month Training + Internship Program</span><b>₹{PROGRAM_PRICE.toLocaleString('en-IN')}</b></div>
+                  <div><span>{PROGRAM_NAME} · 3-month Training + Internship</span><b>₹{PROGRAM_PRICE.toLocaleString('en-IN')}</b></div>
                   <small>One-time fee. Secure payment via Razorpay (UPI, cards, netbanking, wallets).</small>
                 </div>
                 {error && <p className="field-error" role="alert">{error}</p>}

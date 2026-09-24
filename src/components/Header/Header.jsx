@@ -5,7 +5,7 @@ import { LOGO_MARK } from '../../data/site'
 const LINKS = [
   { to: '/#why', label: 'Why us' },
   { to: '/#program', label: 'Program' },
-  { to: '/#tracks', label: 'Tracks' },
+  { to: '/#included', label: "What's included" },
   { to: '/#faq', label: 'FAQ' },
 ]
 

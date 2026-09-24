@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import {
-  Briefcase, GraduationCap, Users, FolderGit2, MessageSquareText, Award,
-  Globe, Smartphone, Workflow, Check, ArrowRight,
+  Briefcase, GraduationCap, Users, FolderGit2, Award, Check, ArrowRight,
+  FileText, Bot, Presentation, Handshake, ScrollText, UserCheck,
 } from 'lucide-react'
 import { EditorialHero } from '../../components/ui/editorial-hero'
 import { Ticker } from '../../components/ui/ticker'
@@ -11,29 +11,33 @@ import { HERO_BG, PROGRAM_PRICE, MAIN_SITE, waLink } from '../../data/site'
 
 const TICKER_ITEMS = [
   'Enrollment open for the next batch',
+  'Spec-Driven Web Development with AI',
   '2 months training + 1 month industry internship',
-  'Learn from an IT consultancy serving Indian & international clients',
+  'L1, L2 managers and mentors from day 1',
   'Online · Learn from anywhere',
 ]
 
 const WHY = [
-  { Icon: Briefcase, title: 'Learn from a real consultancy', text: 'Our mentors deliver projects for Indian and international clients every day. You learn the tools, workflows and standards used on the job, not just textbook theory.' },
-  { Icon: GraduationCap, title: 'Training first, then the job', text: 'Two months of structured training builds the skills. The final month puts them to work in an industry-level internship.' },
-  { Icon: Users, title: 'Legit industry experience', text: 'Work in a team, take tasks, ship deliverables and get reviewed like a junior engineer. That is what recruiters ask about.' },
+  { Icon: Briefcase, title: 'Learn from a real consultancy', text: 'Our team delivers projects for Indian and international clients every day. You learn the tools, workflows and standards used on the job, not just textbook theory.' },
+  { Icon: FileText, title: 'Spec first, then build with AI', text: 'Learn the way modern teams ship: write a clear spec, then use AI coding tools to build, test and review against it. Faster work, fewer rewrites.' },
+  { Icon: UserCheck, title: 'Onboarded from day 1', text: 'You are onboarded into our systems, connected to HR, and assigned an L1 manager, an L2 manager and mentors who guide you through the program.' },
+  { Icon: Users, title: 'Work on industry projects', text: 'Take tasks, ship deliverables and get reviewed like a junior engineer on our team. That is the experience recruiters ask about.' },
   { Icon: FolderGit2, title: 'A portfolio that speaks', text: 'Leave with projects you can demo, a GitHub you are proud of, and stories for your interviews.' },
-  { Icon: MessageSquareText, title: 'Mentor feedback', text: 'Reviews and guidance from working professionals so you fix mistakes early and learn faster.' },
-  { Icon: Award, title: 'Recognition for your effort', text: 'Completion certificate and internship documentation for your resume and LinkedIn profile.' },
+  { Icon: Award, title: 'Two certificates and a letter', text: 'A training completion certificate, an internship completion certificate and a proper internship letter for your resume and LinkedIn.' },
 ]
 
 const PHASES = [
-  { label: 'Month 1–2', title: 'Training', Icon: GraduationCap, points: ['Structured curriculum in your chosen track', 'Live sessions, assignments and mini-projects', 'Industry tools, version control and best practices', 'Regular doubt-clearing and progress reviews'] },
-  { label: 'Month 3', title: 'Industry internship', Icon: Briefcase, points: ['Industry-level project tasks', 'Team workflow: tasks, reviews, deadlines', 'Mentor feedback on real deliverables', 'Final showcase and internship documentation'] },
+  { label: 'Month 1–2', title: 'Training', Icon: GraduationCap, points: ['Spec-driven web development: requirements, specs, design and task breakdown', 'Building, testing and reviewing web apps with AI coding tools', 'Lectures, live meetings and hands-on assignments', 'Webinars and workshops with industry experts and our tech team', 'Training completion certificate'] },
+  { label: 'Month 3', title: 'Industry internship', Icon: Briefcase, points: ['Internship letter and onboarding into our systems', 'Work on industry projects with our team', 'Tasks, reviews and deadlines under your L1 and L2 managers', 'Guidance from mentors on real deliverables', 'Internship completion certificate'] },
 ]
 
-const TRACKS = [
-  { tag: 'Build', title: 'Web Development', Icon: Globe, text: 'Modern front-end and back-end, from responsive UIs to APIs and deployment.' },
-  { tag: 'Build', title: 'App Development', Icon: Smartphone, text: 'Build and ship mobile and cross-platform apps with real product thinking.' },
-  { tag: 'Automate', title: 'Automation & AI', Icon: Workflow, text: 'Automate business workflows with scripts, integrations and AI tooling.' },
+const INCLUDED = [
+  { tag: 'Learn', title: 'Lectures & meetings', Icon: GraduationCap, text: 'Recorded lectures in your Intern Portal plus live meetings with your managers and mentors.' },
+  { tag: 'Learn', title: 'Webinars & workshops', Icon: Presentation, text: 'Sessions with industry experts and our tech team on how real projects are specced, built and shipped.' },
+  { tag: 'Build', title: 'AI-powered development', Icon: Bot, text: 'Hands-on practice turning specs into working web apps with AI coding assistants, then testing and reviewing the result.' },
+  { tag: 'Support', title: 'HR, managers & mentors', Icon: Handshake, text: 'Connected to HR from day 1, with an assigned L1 manager, L2 manager and mentors to guide your work.' },
+  { tag: 'Work', title: 'Industry projects', Icon: FolderGit2, text: 'Contribute to industry projects during the internship month, the same way our team works.' },
+  { tag: 'Credentials', title: 'Letter & certificates', Icon: ScrollText, text: 'Internship letter on enrollment, plus separate certificates for completing the training and the internship.' },
 ]
 
 const STEPS = [
@@ -43,12 +47,14 @@ const STEPS = [
 ]
 
 const FAQ = [
+  ['What is spec-driven development with AI?', 'You first write a clear specification of what to build: requirements, design and a task breakdown. Then you use AI coding tools to implement it, and test and review the result against the spec. It is how modern teams use AI to ship faster without losing quality.'],
   ['Is the program online or offline?', 'The program is delivered online, so you can join from anywhere in India or abroad.'],
-  ['How is the internship different from the training?', 'In the first two months you learn through structured training. In the third month you apply those skills on industry-level tasks under mentor guidance, the way our team works on client projects.'],
-  ['Do I need prior experience?', 'No. Training starts from the fundamentals of your chosen track. Curiosity and consistency matter more than prior knowledge.'],
+  ['How is the internship different from the training?', 'In the first two months you learn through lectures, meetings, webinars and workshops. In the third month you apply those skills on industry projects with our team, under your managers and mentors.'],
+  ['Who will guide me?', 'From day 1 you are onboarded into our systems, connected to HR, and assigned an L1 manager, an L2 manager and mentors. You also learn from industry experts and our tech team in webinars and workshops.'],
+  ['Do I need prior experience?', 'No. Training starts from the fundamentals of web development. Curiosity and consistency matter more than prior knowledge.'],
   ['Why do I need to follow your LinkedIn and Instagram pages?', 'It is part of internship enrollment. We share batch announcements, schedules and opportunities there.'],
   ['What payment methods are accepted?', 'UPI, debit/credit cards, netbanking and wallets through Razorpay\'s secure checkout.'],
-  ['Will I get a certificate?', 'Yes. On successful completion you receive a certificate and internship documentation for your resume and LinkedIn.'],
+  ['Will I get a certificate?', 'Yes, two. You get a certificate for completing the training and another for completing the internship, along with a proper internship letter when you enroll.'],
 ]
 
 export default function Home() {
@@ -65,13 +71,13 @@ export default function Home() {
       <Ticker items={TICKER_ITEMS} />
 
       <EditorialHero
-        pills={['3-month program', 'Training + Internship']}
-        title={<>Train like a student.<br /><em>Intern like an engineer.</em></>}
-        subtitle="Two months of hands-on training, then one month of a real industry internship, delivered by InfusioTech, an IT consultancy building websites, apps and automation for clients across India and worldwide."
+        pills={['Spec-Driven Web Development with AI', '3 months: Training + Internship']}
+        title={<>Spec it clearly.<br /><em>Build it with AI.</em></>}
+        subtitle="Two months of training in spec-driven web development with AI, then a one-month internship on industry projects. Delivered by InfusioTech, an IT consultancy building websites, apps and automation for clients across India and worldwide."
         primaryCta={{ label: 'Enroll in the program', href: `${import.meta.env.BASE_URL}enroll` }}
         secondaryCta={{ label: 'See how it works', href: '#program' }}
         backgroundImage={HERO_BG}
-        marqueeWords={['TRAIN', 'BUILD', 'INTERN', 'GET HIRED']}
+        marqueeWords={['SPEC', 'BUILD WITH AI', 'INTERN', 'GET HIRED']}
       />
 
       <section className="section" id="why">
@@ -132,15 +138,15 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section" id="tracks">
+      <section className="section" id="included">
         <div className="wrap">
           <Reveal as="div" className="section-head">
-            <div className="eyebrow">Learning tracks</div>
-            <h2>Pick the skills the industry hires for</h2>
-            <p>Track availability may vary by batch.</p>
+            <div className="eyebrow">What's included</div>
+            <h2>Everything you need to go from learner to intern</h2>
+            <p>One focused program: Spec-Driven Web Development with AI.</p>
           </Reveal>
           <div className="service-grid">
-            {TRACKS.map((t, i) => (
+            {INCLUDED.map((t, i) => (
               <Reveal as="div" delay={i * 0.05} key={t.title}>
                 <div className="service-card">
                   <div className="icon"><t.Icon size={20} strokeWidth={1.75} /></div>
