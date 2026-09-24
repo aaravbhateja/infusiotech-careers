@@ -4,6 +4,9 @@ const MAX_ATTEMPTS = 5
 const MAX_B64_LEN = 2_000_000 // ~1.5 MB per image; the browser resizes before upload
 // Tried in order; falls through to the next when a model is overloaded or rate-limited.
 const MODELS = [Deno.env.get('GEMINI_MODEL') ?? 'gemini-flash-latest', 'gemini-3.6-flash', 'gemini-3.1-flash-lite']
+const ROUNDS = 3
+// Bad key or bad request: retrying won't help. Anything else (503, 429, 404 for a retired model) moves on.
+const FATAL = new Set([400, 401, 403])
 
 // Client sends "data:image/jpeg;base64,...." strings.
 function parseImage(v: unknown) {
@@ -67,17 +70,24 @@ Deno.serve(async (req) => {
     },
   })
 
+  // Gemini overloads (503) and rate limits (429) are usually brief, so cycle through the
+  // models a few times with a growing pause (0s, 3s, 6s) before giving up.
   let res: Response | null = null
-  for (const model of MODELS) {
-    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-      body: payload,
-    })
-    if (r.ok) { res = r; break }
-    console.error('gemini failed', model, r.status, await r.text())
+  let fatal = false
+  for (let round = 0; round < ROUNDS && !res && !fatal; round++) {
+    if (round) await new Promise((r) => setTimeout(r, round * 3000))
+    for (const model of MODELS) {
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+        body: payload,
+      })
+      if (r.ok) { res = r; break }
+      console.error('gemini failed', round, model, r.status, await r.text())
+      if (FATAL.has(r.status)) { fatal = true; break }
+    }
   }
-  if (!res) return json(req, { error: 'Verification service is busy. Please try again in a minute.' }, 502)
+  if (!res) return json(req, { error: 'Our verification service is busy right now. Please wait a minute and click Verify again. Your details are saved.' }, 502)
 
   let verdict: { linkedin: { is_infusiotech_page: boolean; is_following: boolean }; instagram: { is_infusiotech_page: boolean; is_following: boolean } }
   try {
