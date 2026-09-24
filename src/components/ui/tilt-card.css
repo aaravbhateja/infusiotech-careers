@@ -1,0 +1,9 @@
+/* Cards in this codebase declare `transition: transform .18s ease, ...`.
+   While the tilt is driving `style.transform` every frame, that transition
+   makes the card lag behind the pointer and smear. Drop transform from the
+   transition list (keeping the colour/shadow ones) without !important by
+   doubling the class for specificity, since CSS bundle order across files
+   isn't guaranteed. */
+.tilt-card-surface.tilt-card-surface {
+  transition-property: border-color, box-shadow, background-color, color;
+}

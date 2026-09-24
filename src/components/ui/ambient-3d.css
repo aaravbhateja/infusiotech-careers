@@ -1,0 +1,108 @@
+/* Shared 3D ambient layer: real perspective + rotateX/Y/Z on soft
+   radial-gradient shapes. No filter:blur (expensive to composite against
+   3D transforms) and no fixed-aspect SVG (which distorts on tall
+   viewports) — sizes use clamp()/vw so it scales cleanly everywhere. */
+
+.ambient-3d {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  perspective: 1400px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ambient-3d-group {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease-out;
+}
+
+.ambient-3d-shape {
+  position: absolute;
+  transform-style: preserve-3d;
+}
+
+/* ---- hero variant: three large shapes ---- */
+.ambient-3d[data-variant="hero"] .ambient-3d-shape {
+  opacity: 0.65;
+}
+.ambient-3d[data-variant="hero"] .shape-a {
+  width: clamp(200px, 34vw, 420px);
+  height: clamp(200px, 34vw, 420px);
+  top: -8%;
+  right: -8%;
+  border-radius: 42% 58% 65% 35% / 45% 45% 55% 55%;
+  background: radial-gradient(circle at 35% 35%, rgba(167, 139, 250, 0.6), rgba(167, 139, 250, 0) 72%);
+  animation: ambient-3d-spin-a 24s linear infinite;
+}
+.ambient-3d[data-variant="hero"] .shape-b {
+  width: clamp(160px, 26vw, 320px);
+  height: clamp(160px, 26vw, 320px);
+  bottom: -10%;
+  left: -6%;
+  clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+  background: radial-gradient(circle at 40% 40%, rgba(239, 162, 78, 0.55), rgba(239, 162, 78, 0) 72%);
+  animation: ambient-3d-spin-b 32s linear infinite;
+}
+.ambient-3d[data-variant="hero"] .shape-c {
+  width: clamp(140px, 20vw, 240px);
+  height: clamp(140px, 20vw, 240px);
+  top: 55%;
+  left: 6%;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 45% 45%, rgba(87, 187, 174, 0.45), rgba(87, 187, 174, 0) 72%);
+  animation: ambient-3d-spin-c 38s linear infinite;
+}
+
+/* ---- page variant: smaller/subtler, for short page headers ---- */
+.ambient-3d[data-variant="page"] .ambient-3d-shape {
+  opacity: 0.4;
+}
+.ambient-3d[data-variant="page"] .shape-a {
+  width: clamp(180px, 26vw, 340px);
+  height: clamp(180px, 26vw, 340px);
+  top: -30%;
+  right: -4%;
+  border-radius: 42% 58% 65% 35% / 45% 45% 55% 55%;
+  background: radial-gradient(circle at 35% 35%, color-mix(in srgb, var(--aurora-1) 45%, transparent), transparent 72%);
+  animation: ambient-3d-spin-a 26s linear infinite;
+}
+.ambient-3d[data-variant="page"] .shape-b {
+  width: clamp(130px, 18vw, 240px);
+  height: clamp(130px, 18vw, 240px);
+  bottom: -40%;
+  left: 2%;
+  clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+  background: radial-gradient(circle at 40% 40%, color-mix(in srgb, var(--accent) 40%, transparent), transparent 72%);
+  animation: ambient-3d-spin-b 34s linear infinite;
+}
+.ambient-3d[data-variant="page"] .shape-c {
+  display: none;
+}
+
+@keyframes ambient-3d-spin-a {
+  0% { transform: translateZ(-140px) rotateX(12deg) rotateY(0deg); }
+  100% { transform: translateZ(-140px) rotateX(12deg) rotateY(360deg); }
+}
+@keyframes ambient-3d-spin-b {
+  0% { transform: translateZ(-90px) rotateX(-8deg) rotateY(0deg) rotateZ(0deg); }
+  100% { transform: translateZ(-90px) rotateX(-8deg) rotateY(-360deg) rotateZ(-360deg); }
+}
+@keyframes ambient-3d-spin-c {
+  0% { transform: translateZ(-200px) rotateX(18deg) rotateY(0deg); }
+  100% { transform: translateZ(-200px) rotateX(18deg) rotateY(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-3d-group {
+    transition: none;
+  }
+  .ambient-3d-shape {
+    animation: none !important;
+  }
+  .ambient-3d .shape-a { transform: translateZ(-140px) rotateX(12deg) rotateY(20deg); }
+  .ambient-3d .shape-b { transform: translateZ(-90px) rotateX(-8deg) rotateY(-20deg); }
+  .ambient-3d .shape-c { transform: translateZ(-200px) rotateX(18deg) rotateY(20deg); }
+}

@@ -1,0 +1,62 @@
+/* Careers-site additions on top of the shared InfusioTech design system (index.css). */
+
+.brand-sub{ color: var(--accent2); font-weight: 600; margin-left: 4px; }
+
+.pkg-cards.two-col{ grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.pkg-cards > * { display: flex; }
+.pkg-cards > * > .pkg-card { flex: 1; }
+.pkg-card .ph-label{ font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent2); }
+.pkg-card.featured .ph-label{ color: var(--accent); }
+.pkg-card .pkg-features{ list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.pkg-card .pkg-features li{ display: flex; gap: 10px; align-items: flex-start; color: var(--muted); font-size: 15px; }
+.pkg-card .pkg-features svg{ color: var(--accent2); margin-top: 4px; flex-shrink: 0; }
+
+.steps-head{ margin-top: 56px; margin-bottom: 20px; }
+.enroll-steps{ list-style: none; counter-reset: s; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.enroll-steps li{ counter-increment: s; background: var(--bg-raised); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 4px; }
+.enroll-steps li::before{ content: counter(s); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--accent2); color: #fff; font-weight: 700; margin-bottom: 8px; }
+.enroll-steps span{ color: var(--muted); font-size: 14.5px; }
+
+.faq details{ background: var(--bg-raised); border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; margin-bottom: 12px; }
+.faq summary{ cursor: pointer; font-weight: 600; }
+.faq details p{ color: var(--muted); margin-top: 10px; font-size: 15.5px; }
+.faq-more{ color: var(--muted); margin-top: 20px; }
+
+/* Enrollment */
+.stepper{ display: flex; list-style: none; padding: 0; margin: 0 0 20px; gap: 8px; }
+.stepper li{ flex: 1; text-align: center; font-size: 13.5px; color: var(--muted); padding: 10px 4px; border-bottom: 3px solid var(--line); }
+.stepper li.on{ color: var(--accent2); border-color: var(--accent2); font-weight: 600; }
+.stepper li.done{ color: var(--ink); border-color: var(--accent2); }
+.enroll-panel{ background: var(--bg-raised); border: 1px solid var(--line); border-radius: 16px; padding: 28px; box-shadow: var(--shadow); }
+.enroll-panel h2{ font-size: 24px; margin-bottom: 8px; }
+.enroll-panel .field{ margin-bottom: 16px; }
+.enroll-panel .form-error-summary{ margin-bottom: 20px; }
+.form-2col{ display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+.muted{ color: var(--muted); }
+.btn-row{ display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+.btn:disabled{ opacity: .6; cursor: wait; }
+.social-grid{ display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 20px 0; }
+.social-card{ display: flex; flex-direction: column; gap: 4px; padding: 18px; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); background: var(--bg); transition: border-color .18s ease, transform .18s ease; }
+.social-card:hover{ border-color: var(--accent2); transform: translateY(-2px); text-decoration: none; }
+.social-card svg{ color: var(--accent2); }
+.social-card span{ color: var(--muted); font-size: 14px; }
+.check{ display: flex; gap: 10px; align-items: center; margin-bottom: 12px; cursor: pointer; }
+.check input{ width: 18px; height: 18px; accent-color: var(--accent2); }
+.bill{ border: 1px dashed var(--accent2); border-radius: 14px; padding: 20px; margin: 18px 0; display: flex; flex-direction: column; gap: 6px; }
+.bill > div{ display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.bill b{ font-family: Fraunces, serif; font-size: 30px; color: var(--accent); }
+.bill small{ color: var(--muted); }
+.done{ display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.done svg{ color: var(--accent2); }
+
+@media (max-width: 640px){
+  .form-2col, .social-grid{ grid-template-columns: 1fr; }
+  .stepper li{ font-size: 12px; }
+}
+
+.social-card a{ font-size: 14px; }
+.social-card.bad{ border-color: #DC2626; }
+.upload{ display: inline-flex; align-items: center; gap: 8px; margin-top: 8px; padding: 9px 14px; border: 1px dashed var(--accent2); border-radius: 8px; cursor: pointer; font-size: 14px; color: var(--accent2); width: fit-content; }
+.upload:hover{ background: var(--accent2-soft); }
+.file-name{ font-size: 13px; color: var(--muted); word-break: break-all; }
+.file-bad{ display: inline-flex; align-items: center; gap: 6px; color: #DC2626; font-size: 13px; }

@@ -1,0 +1,28 @@
+/* Intern portal. Builds on the design tokens in index.css / careers.css. */
+.portal-auth{ max-width: 460px; }
+.portal-top{ display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.portal-top h1{ font-size: clamp(26px, 3.4vw, 36px); margin-top: 8px; }
+.portal-tabs{ display: flex; gap: 6px; flex-wrap: wrap; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+.portal-tabs button{ display: inline-flex; align-items: center; gap: 8px; background: none; border: 0; border-bottom: 3px solid transparent; padding: 12px 14px; cursor: pointer; color: var(--muted); font: inherit; font-weight: 600; }
+.portal-tabs button.on{ color: var(--accent2); border-color: var(--accent2); }
+.portal-tabs button:hover{ color: var(--ink); }
+.portal-grid{ display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.portal-grid .wide{ grid-column: 1 / -1; }
+.portal .small{ font-size: 13.5px; margin-top: 6px; }
+.portal .sub{ font-size: 15px; margin-top: 22px; font-family: 'Source Sans 3', sans-serif; }
+.pbig{ font-family: Fraunces, serif; font-size: 48px; color: var(--accent); line-height: 1.1; margin: 8px 0 12px; }
+.pbar{ height: 10px; border-radius: 99px; background: var(--bg-sunk); overflow: hidden; margin: 6px 0; }
+.pbar > div{ height: 100%; background: var(--accent2); border-radius: 99px; transition: width .4s ease; }
+.stat{ display: flex; justify-content: space-between; gap: 12px; margin-top: 14px; }
+.ok{ display: flex; align-items: center; gap: 8px; color: var(--accent2); font-weight: 600; margin: 12px 0; }
+.plist{ list-style: none; padding: 0; margin: 12px 0 0; max-height: 360px; overflow: auto; }
+.plist li{ display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; }
+.note, .task{ border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-top: 14px; background: var(--bg); display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.note.past{ opacity: .75; }
+.note-head{ display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; }
+.task .field, .task .btn-row{ width: 100%; }
+.late{ color: #DC2626; }
+.chip{ font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 99px; background: var(--bg-sunk); color: var(--muted); white-space: nowrap; }
+.chip-in_progress{ background: color-mix(in srgb, #F59E0B 18%, var(--bg)); color: #B45309; }
+.chip-submitted{ background: color-mix(in srgb, #3B82F6 16%, var(--bg)); color: #1D4ED8; }
+.chip-done{ background: var(--accent2-soft); color: var(--accent2); }

@@ -1,0 +1,122 @@
+.editorial-hero{
+  position: relative;
+  overflow: hidden;
+  min-height: 88svh;
+  display: flex;
+  align-items: center;
+  background: var(--bg);
+  isolation: isolate;
+}
+
+.editorial-hero-photo{
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.9;
+}
+.editorial-hero-photo::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 55%, transparent) 0%, color-mix(in srgb, var(--bg) 88%, transparent) 100%);
+}
+
+/* Oversized vertical marquee of keywords, sitting behind the headline like
+   scrolling ticker tape. Wide letterforms, low contrast against the
+   background so the foreground headline stays the clear focal point. */
+.editorial-hero-marquee{
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(180deg, transparent, black 12%, black 88%, transparent);
+  mask-image: linear-gradient(180deg, transparent, black 12%, black 88%, transparent);
+}
+.editorial-hero-marquee-track{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: editorial-hero-scroll-y 40s linear infinite;
+  will-change: transform;
+}
+.editorial-hero-marquee-track span{
+  font-family: 'Archivo', ui-sans-serif, sans-serif;
+  font-weight: 300;
+  font-size: clamp(90px, 16vw, 220px);
+  line-height: 1;
+  color: color-mix(in srgb, var(--ink) 7%, transparent);
+  white-space: nowrap;
+  padding-block: 0.1em;
+}
+
+@keyframes editorial-hero-scroll-y{
+  from{ transform: translateY(0); }
+  to{ transform: translateY(-50%); }
+}
+
+.editorial-hero-content{
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+.editorial-hero-pills{
+  display: flex;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+.editorial-hero-pill{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg-raised) 80%, transparent);
+  backdrop-filter: blur(8px);
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.editorial-hero h1{
+  font-family: 'Archivo', ui-sans-serif, sans-serif;
+  font-weight: 300;
+  font-size: clamp(42px, 7vw, 96px);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  max-width: 16ch;
+}
+.editorial-hero h1 em{
+  font-style: normal;
+  color: var(--accent);
+}
+
+.editorial-hero-sub{
+  margin-top: 26px;
+  font-size: clamp(16px, 1.6vw, 19px);
+  color: var(--muted);
+  max-width: 46ch;
+  line-height: 1.6;
+}
+
+.editorial-hero-ctas{
+  margin-top: 36px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px){
+  .editorial-hero{ min-height: 92svh; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .editorial-hero-marquee-track{ animation: none; }
+}
