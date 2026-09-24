@@ -78,7 +78,7 @@ Deno.serve(async (req) => {
   if (!people?.length) return json(req, { sent: 0 })
 
   const portal = Deno.env.get('PORTAL_URL') ?? 'https://infusiotech.careers/portal'
-  const reply = Deno.env.get('MAIL_REPLY_TO') ?? Deno.env.get('COMPANY_EMAIL') ?? 'infusiotech@gmail.com'
+  const reply = Deno.env.get('MAIL_REPLY_TO') ?? Deno.env.get('COMPANY_EMAIL') ?? 'contact@infusiotech.com'
   const html = (name: string) => layout({
     preheader: msg.preheader, heading: msg.heading, body: p(`Hi ${esc(name)},`) + msg.body,
     cta: msg.cta ? { label: msg.cta, url: portal } : undefined,

@@ -20,7 +20,7 @@ const COMPANY = () => ({
   name: env('COMPANY_NAME', 'InfusioTech'),
   address: env('COMPANY_ADDRESS', 'Jaipur, Rajasthan, India'),
   web: env('COMPANY_WEB', 'infusiotech.com'),
-  email: env('COMPANY_EMAIL', 'infusiotech@gmail.com'),
+  email: env('COMPANY_EMAIL', 'contact@infusiotech.com'),
   signatory: env('SIGNATORY_NAME', 'Lokesh Sangwan'),
   signatoryTitle: env('SIGNATORY_TITLE', 'Managing Director'),
   l1: env('MANAGER_L1', 'Chaitanya Shandilya'),

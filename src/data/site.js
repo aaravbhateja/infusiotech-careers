@@ -1,6 +1,6 @@
 export const PHONE_DISPLAY = '+91 70110 83740'
 export const PHONE_INTL = '917011083740'
-export const EMAIL = 'infusiotech@gmail.com'
+export const EMAIL = 'contact@infusiotech.com'
 export const MAIN_SITE = 'https://infusiotech.com'
 
 // Program details. PROGRAM_PRICE is display-only: the amount actually charged is the

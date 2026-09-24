@@ -42,7 +42,7 @@ export interface Layout {
   note?: string
 }
 
-export function layout({ preheader, heading, body, cta, note }: Layout, contactEmail = 'careers@infusiotech.com') {
+export function layout({ preheader, heading, body, cta, note }: Layout, contactEmail = 'contact@infusiotech.com') {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only"><title>${esc(heading)}</title></head>
 <body style="margin:0;padding:0;background:#EEF1F4">

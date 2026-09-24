@@ -36,7 +36,7 @@ export async function sendMail(a: any) {
   const from = Deno.env.get('MAIL_FROM')
   if (!key || !from) throw new Error('Email is not configured (RESEND_API_KEY / MAIL_FROM)')
   const { bytes, filename } = await makeLoi(a)
-  const reply = Deno.env.get('MAIL_REPLY_TO') ?? Deno.env.get('COMPANY_EMAIL') ?? 'infusiotech@gmail.com'
+  const reply = Deno.env.get('MAIL_REPLY_TO') ?? Deno.env.get('COMPANY_EMAIL') ?? 'contact@infusiotech.com'
   const portalUrl = Deno.env.get('PORTAL_URL') ?? 'https://infusiotech.careers/portal'
   const html = layout({
     preheader: 'Your seat is confirmed. Your Letter of Intent is attached.',
@@ -120,7 +120,7 @@ export async function sendPortalMail(a: any, portal: PortalAccess) {
   const from = Deno.env.get('MAIL_FROM')
   if (!key || !from || !portal.password) throw new Error('Email is not configured or no password was issued')
   const url = Deno.env.get('PORTAL_URL') ?? 'https://infusiotech.careers/portal'
-  const reply = Deno.env.get('MAIL_REPLY_TO') ?? Deno.env.get('COMPANY_EMAIL') ?? 'infusiotech@gmail.com'
+  const reply = Deno.env.get('MAIL_REPLY_TO') ?? Deno.env.get('COMPANY_EMAIL') ?? 'contact@infusiotech.com'
   const html = layout({
     preheader: 'Your login details for the InfusioTech Intern Portal.',
     heading: `Your Intern Portal login, ${a.first_name}`,
