@@ -16,7 +16,7 @@ npm run dev
 2. `supabase db push` (creates `applicants`; RLS is on with no policies, so only the functions can touch it).
 3. Set secrets (use `rzp_test_` keys first):
    ```
-   supabase secrets set RAZORPAY_KEY_ID=... RAZORPAY_KEY_SECRET=... PRICE_INR=1499 \
+   supabase secrets set RAZORPAY_KEY_ID=... RAZORPAY_KEY_SECRET=... PRICE_INR=5000 \
      RAZORPAY_WEBHOOK_SECRET=... ALLOWED_ORIGINS=https://infusiotech.careers,http://localhost:5173
    ```
 4. Follow verification uses Google's free Gemini API. Get a key at https://aistudio.google.com/apikey and run `supabase secrets set GEMINI_API_KEY=...` (optional `GEMINI_MODEL`, default `gemini-flash-latest`). Free-tier limits and terms change, so check them; on the free tier Google may use submitted content to improve its products.

@@ -6,7 +6,7 @@ Deno.serve(async (req) => {
 
   const keyId = Deno.env.get('RAZORPAY_KEY_ID')
   const keySecret = Deno.env.get('RAZORPAY_KEY_SECRET')
-  const price = Number(Deno.env.get('PRICE_INR') ?? 1499)
+  const price = Number(Deno.env.get('PRICE_INR') ?? 5000)
   if (!keyId || !keySecret) return json(req, { error: 'Payments are not configured yet.' }, 503)
 
   const { id } = await req.json().catch(() => ({}))

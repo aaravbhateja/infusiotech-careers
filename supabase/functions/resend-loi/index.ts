@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
     a ??= {
       id: '00000000-0000-4000-8000-000000000000', first_name: 'Sample', last_name: 'Student', email: 'sample@example.com',
       college: 'Sample Institute of Technology', state: 'Rajasthan', country: 'India', payment_id: 'pay_SAMPLE123',
-      amount_paise: 149900, paid_at: new Date().toISOString(),
+      amount_paise: 500000, paid_at: new Date().toISOString(),
     }
     const { bytes, filename } = await makeLoi(a)
     return new Response(bytes, {
@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
       await sendMail({
         id: '00000000-0000-4000-8000-000000000000', first_name: 'Sample', last_name: 'Student', email: to,
         college: 'Sample Institute of Technology', state: 'Rajasthan', country: 'India', payment_id: 'pay_SAMPLE123',
-        amount_paise: 149900, paid_at: new Date().toISOString(),
+        amount_paise: 500000, paid_at: new Date().toISOString(),
       })
       return json(req, { ok: true, sent_to: to })
     } catch (e) {
