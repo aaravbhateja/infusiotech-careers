@@ -53,7 +53,7 @@ Deno.serve(async (req) => {
   if (!a) return json(req, { error: 'Application not found.' }, 404)
   if (a.follow_verified) return json(req, { ok: true, linkedin: true, instagram: true })
   if (a.follow_attempts >= MAX_ATTEMPTS)
-    return json(req, { error: 'Too many attempts. Please contact us on WhatsApp for help.' }, 429)
+    return json(req, { error: 'Too many attempts. Please email contact@infusiotech.com for help.' }, 429)
 
   const [liHash, igHash] = await Promise.all([sha256(li.data), sha256(ig.data)])
   const { data: reused } = await supabase.from('applicants').select('id')

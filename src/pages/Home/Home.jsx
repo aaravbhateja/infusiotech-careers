@@ -7,7 +7,7 @@ import {
 import { EditorialHero } from '../../components/ui/editorial-hero'
 import { Ticker } from '../../components/ui/ticker'
 import Reveal from '../../components/Reveal/Reveal'
-import { HERO_BG, PROGRAM_PRICE, MAIN_SITE, waLink } from '../../data/site'
+import { HERO_BG, PROGRAM_PRICE, MAIN_SITE, EMAIL } from '../../data/site'
 
 const TICKER_ITEMS = [
   'Enrollment open for the next batch',
@@ -175,7 +175,7 @@ export default function Home() {
             ))}
           </div>
           <p className="faq-more">
-            Still unsure? <a href={waLink('Hi InfusioTech, I have a question about the careers program')} target="_blank" rel="noopener noreferrer">Ask us on WhatsApp</a>.
+            Still unsure? Email us at <a href={`mailto:${EMAIL}?subject=${encodeURIComponent('Question about the careers program')}`}>{EMAIL}</a>.
           </p>
         </div>
       </section>

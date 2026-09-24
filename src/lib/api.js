@@ -2,7 +2,7 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 async function call(fn, body) {
-  if (!SUPABASE_URL || !ANON_KEY) throw new Error('Enrollment is not configured yet. Please contact us on WhatsApp.')
+  if (!SUPABASE_URL || !ANON_KEY) throw new Error('Enrollment is not configured yet. Please email contact@infusiotech.com.')
   const res = await fetch(`${SUPABASE_URL}/functions/v1/${fn}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` },

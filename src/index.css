@@ -609,31 +609,6 @@ a.service-card:hover h3{ color: var(--accent2); }
   .footer-brand{ grid-column: 1 / -1; }
 }
 
-/* ---------------- WhatsApp float ---------------- */
-.wa-float{
-  position: fixed; right: 20px; bottom: 20px; z-index: 200;
-  width: 56px; height: 56px; border-radius: 50%;
-  background: var(--accent2); color: #fff;
-  display:flex; align-items:center; justify-content:center;
-  box-shadow: var(--shadow-lg);
-  transition: transform .15s ease;
-}
-.wa-float::before{
-  content:"";
-  position:absolute; inset:0; border-radius:50%;
-  box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent2) 55%, transparent);
-  animation: wa-pulse 2.8s ease-out infinite;
-}
-.wa-float:hover{ transform: translateY(-2px); text-decoration:none; }
-@keyframes wa-pulse{
-  0%{ box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent2) 45%, transparent); }
-  70%{ box-shadow: 0 0 0 14px color-mix(in srgb, var(--accent2) 0%, transparent); }
-  100%{ box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent2) 0%, transparent); }
-}
-@media (prefers-reduced-motion: reduce){
-  .wa-float::before{ animation:none; }
-}
-
 /* ---------------- Page header (inner pages) ---------------- */
 .page-header{
   padding-block: 52px 44px;

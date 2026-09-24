@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { EMAIL, MAIN_SITE, LINKEDIN_URL, INSTAGRAM_URL, waLink, LOGO_MARK } from '../../data/site'
+import { EMAIL, MAIN_SITE, LINKEDIN_URL, INSTAGRAM_URL, LOGO_MARK } from '../../data/site'
 
 export default function Footer() {
   return (
@@ -26,7 +26,6 @@ export default function Footer() {
             <ul>
               <li><a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
               <li><a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">Instagram</a></li>
-              <li><a href={waLink('Hi InfusioTech, I have a question about the careers program')} target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
               <li><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
             </ul>
           </div>
