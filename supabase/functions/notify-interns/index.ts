@@ -2,7 +2,7 @@ import { db, guard, json, safeEqual } from '../_shared/common.ts'
 
 // Admin tool (needs ADMIN_TOKEN), called by the local admin panel after every change it makes.
 //   { token, type, intern_id: uuid|null, ...details }   intern_id null = every paid intern with a portal login
-// type: task_assigned | task_removed | task_approved | task_returned | meeting_scheduled | meeting_cancelled | feedback
+// type: task_assigned | task_removed | task_approved | task_returned | meeting_scheduled | meeting_cancelled | lecture_added | feedback
 const esc = (s: unknown) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
 const when = (iso: string) => new Date(iso).toLocaleString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Kolkata' }) + ' IST'
 const day = (d: string) => new Date(`${d}T00:00:00`).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -16,6 +16,7 @@ function compose(type: string, d: any): { subject: string; lines: string[] } | n
     case 'task_returned': return { subject: `Changes needed: ${d.title}`, lines: [`Your submission for <b>${esc(d.title)}</b> needs some changes. Please update it and submit again.`] }
     case 'meeting_scheduled': return { subject: `Meeting scheduled: ${d.title}`, lines: [`A meeting has been scheduled: <b>${esc(d.title)}</b>`, `When: <b>${esc(when(d.starts_at))}</b> (${esc(d.duration_min)} min)`, d.host && `Host: ${esc(d.host)}`, d.description && esc(d.description), /^https?:\/\//i.test(d.link ?? '') && `Join: <a href="${esc(d.link)}">${esc(d.link)}</a>`] }
     case 'meeting_cancelled': return { subject: `Meeting cancelled: ${d.title}`, lines: [`The meeting <b>${esc(d.title)}</b> (${esc(when(d.starts_at))}) has been cancelled.`] }
+    case 'lecture_added': return { subject: `New lecture: ${d.title}`, lines: [`A new lecture is available in your portal: <b>${esc(d.title)}</b>${d.week ? ` (Week ${esc(d.week)})` : ''}.`, d.description && esc(d.description), 'Open the <b>Lectures</b> tab to watch it.'] }
     case 'feedback': return { subject: 'New feedback from your manager', lines: ['You have new feedback in your portal:', `<i>${esc(d.note)}</i>`, d.rating && `Rating: ${'★'.repeat(d.rating)}${'☆'.repeat(5 - d.rating)}`, d.author && `— ${esc(d.author)}`] }
   }
   return null

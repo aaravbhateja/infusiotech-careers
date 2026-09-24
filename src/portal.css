@@ -26,3 +26,10 @@
 .chip-in_progress{ background: color-mix(in srgb, #F59E0B 18%, var(--bg)); color: #B45309; }
 .chip-submitted{ background: color-mix(in srgb, #3B82F6 16%, var(--bg)); color: #1D4ED8; }
 .chip-done{ background: var(--accent2-soft); color: var(--accent2); }
+.lecture-player{ position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: #000; }
+.lecture-player iframe{ position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.lecture-list{ max-height: none; }
+.lecture-list li{ align-items: center; }
+.lecture-list button{ display: inline-flex; align-items: center; gap: 8px; background: none; border: 0; padding: 0; font: inherit; color: var(--ink); cursor: pointer; text-align: left; }
+.lecture-list button:hover{ color: var(--accent2); }
+.lecture-list button.on{ color: var(--accent2); font-weight: 700; }

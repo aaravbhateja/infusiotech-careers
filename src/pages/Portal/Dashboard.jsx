@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { CalendarCheck, ListChecks, Video, TrendingUp, LogOut, CheckCircle2, ExternalLink } from 'lucide-react'
+import { CalendarCheck, ListChecks, Video, TrendingUp, LogOut, CheckCircle2, ExternalLink, PlayCircle } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 
 const PROGRAM_DAYS = 90
@@ -8,6 +8,7 @@ const TABS = [
   { id: 'attendance', label: 'Attendance', Icon: CalendarCheck },
   { id: 'tasks', label: 'Tasks', Icon: ListChecks },
   { id: 'meetings', label: 'Meetings', Icon: Video },
+  { id: 'lectures', label: 'Lectures', Icon: PlayCircle },
 ]
 const STATUS_LABEL = { todo: 'To do', in_progress: 'In progress', submitted: 'Submitted', done: 'Done' }
 
@@ -43,17 +44,19 @@ export default function Dashboard({ user }) {
   const [taskProgress, setTaskProgress] = useState({})
   const [meetings, setMeetings] = useState([])
   const [notes, setNotes] = useState([])
+  const [lectures, setLectures] = useState([])
 
   const load = useCallback(async () => {
-    const [p, a, t, tp, m, n] = await Promise.all([
+    const [p, a, t, tp, m, n, l] = await Promise.all([
       supabase.from('my_profile').select('*').maybeSingle(),
       supabase.from('attendance').select('att_date,checked_in,note').order('att_date', { ascending: false }),
       supabase.from('tasks').select('*').order('due_date', { ascending: true, nullsFirst: false }),
       supabase.from('task_progress').select('*'),
       supabase.from('meetings').select('*').order('starts_at', { ascending: true }),
       supabase.from('progress_notes').select('*').order('created_at', { ascending: false }),
+      supabase.from('lectures').select('*').order('week', { ascending: true, nullsFirst: false }).order('created_at', { ascending: true }),
     ])
-    const failed = [p, a, t, tp, m, n].find((r) => r.error)
+    const failed = [p, a, t, tp, m, n, l].find((r) => r.error)
     if (failed) return setState({ loading: false, error: 'Could not load your portal data. Please refresh.' })
     setProfile(p.data)
     setAttendance(a.data)
@@ -61,6 +64,7 @@ export default function Dashboard({ user }) {
     setTaskProgress(Object.fromEntries(tp.data.map((r) => [r.task_id, r])))
     setMeetings(m.data)
     setNotes(n.data)
+    setLectures(l.data)
     setState({ loading: false, error: '' })
   }, [])
 
@@ -217,6 +221,8 @@ export default function Dashboard({ user }) {
             </div>
           </div>
         )}
+
+        {tab === 'lectures' && <Lectures lectures={lectures} />}
       </div>
     </section>
   )
@@ -231,6 +237,52 @@ function Meeting({ m, past }) {
       {!past && m.link && /^https?:\/\//i.test(m.link) && (
         <a className="btn btn-ghost" href={m.link} target="_blank" rel="noopener noreferrer">Join meeting <ExternalLink size={14} aria-hidden /></a>
       )}
+    </div>
+  )
+}
+
+function Lectures({ lectures }) {
+  const [currentId, setCurrentId] = useState(null)
+  if (lectures.length === 0) {
+    return <div className="enroll-panel"><h2>Lectures</h2><p className="muted">No lectures yet. Recorded sessions will appear here once your managers add them.</p></div>
+  }
+  const current = lectures.find((l) => l.id === currentId) ?? lectures[lectures.length - 1]
+  const groups = []
+  for (const l of lectures) {
+    const label = l.week ? `Week ${l.week}` : 'Other'
+    const g = groups.find((x) => x.label === label)
+    g ? g.items.push(l) : groups.push({ label, items: [l] })
+  }
+  return (
+    <div className="portal-grid">
+      <div className="enroll-panel wide">
+        <div className="lecture-player">
+          {/* youtube-nocookie avoids YouTube tracking cookies until the intern presses play. */}
+          <iframe key={current.id} src={`https://www.youtube-nocookie.com/embed/${current.youtube_id}?rel=0&modestbranding=1`}
+            title={current.title} allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowFullScreen />
+        </div>
+        <h2 style={{ marginTop: 16 }}>{current.title}</h2>
+        {current.week && <p className="muted small">Week {current.week}</p>}
+        {current.description && <p className="muted" style={{ whiteSpace: 'pre-wrap' }}>{current.description}</p>}
+      </div>
+      <div className="enroll-panel wide">
+        <h2>All lectures</h2>
+        {groups.map((g) => (
+          <div key={g.label}>
+            <h3 className="sub">{g.label}</h3>
+            <ul className="plist lecture-list">
+              {g.items.map((l) => (
+                <li key={l.id}>
+                  <button className={l.id === current.id ? 'on' : undefined} aria-current={l.id === current.id || undefined} onClick={() => { setCurrentId(l.id); window.scrollTo({ top: 0, behavior: 'smooth' }) }}>
+                    <PlayCircle size={16} aria-hidden /> {l.title}
+                  </button>
+                  <span className="muted">{fmtDay(l.created_at.slice(0, 10))}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
