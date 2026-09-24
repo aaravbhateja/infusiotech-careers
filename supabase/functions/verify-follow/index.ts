@@ -87,7 +87,7 @@ Deno.serve(async (req) => {
       if (FATAL.has(r.status)) { fatal = true; break }
     }
   }
-  if (!res) return json(req, { error: 'Our verification service is busy right now. Please wait a minute and click Verify again. Your details are saved.' }, 502)
+  if (!res) return json(req, { error: 'Our verification service is busy right now. Please keep this page open, wait a minute and click Verify again.' }, 502)
 
   let verdict: { linkedin: { is_infusiotech_page: boolean; is_following: boolean }; instagram: { is_infusiotech_page: boolean; is_following: boolean } }
   try {
