@@ -1,11 +1,23 @@
 import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CheckCircle2, Briefcase, Camera, Upload, XCircle } from 'lucide-react'
+import { CheckCircle2, Upload, XCircle, ExternalLink } from 'lucide-react'
 import { Ambient3D } from '../../components/ui/ambient-3d'
 import { LINKEDIN_URL, INSTAGRAM_URL, PROGRAM_PRICE, PROGRAM_NAME, EMAIL } from '../../data/site'
 import { register, createOrder, verifyPayment, verifyFollow, imageToDataUrl, loadRazorpay } from '../../lib/api'
 
 const STEP_LABELS = ['Your details', 'Follow us', 'Payment']
+
+// lucide-react no longer ships brand logos, so these are drawn inline.
+const LinkedInIcon = () => (
+  <svg className="brand-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+    <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z" />
+  </svg>
+)
+const InstagramIcon = () => (
+  <svg className="brand-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <rect x="2" y="2" width="20" height="20" rx="5.5" /><circle cx="12" cy="12" r="4.2" /><circle cx="17.6" cy="6.4" r="1" fill="currentColor" stroke="none" />
+  </svg>
+)
 
 const EMPTY = {
   first_name: '', last_name: '', email: '', phone: '', gender: '', country: 'India', state: '',
@@ -40,6 +52,7 @@ export default function Enroll() {
   const [touched, setTouched] = useState({})
   const [attempted, setAttempted] = useState(false)
   const [shots, setShots] = useState({ li: null, ig: null }) // { name, dataUrl }
+  const [opened, setOpened] = useState({ li: false, ig: false }) // which follow pages they've opened
   const [result, setResult] = useState(null) // { linkedin: bool, instagram: bool } from the last failed check
   const [applicantId, setApplicantId] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -188,15 +201,22 @@ export default function Enroll() {
             {step === 1 && (
               <div>
                 <h2>Follow our pages to unlock payment</h2>
-                <p className="muted">1) Open each page and click Follow. 2) Take a screenshot of the page showing the &quot;Following&quot; button. 3) Upload both below. We verify them automatically, in a few seconds.</p>
+                <p className="muted">Do this for both pages: tap the button to open our page, click <b>Follow</b>, take a screenshot showing the &quot;Following&quot; button, then come back and upload it here.</p>
                 <div className="social-grid">
                   {[
-                    { key: 'li', label: 'LinkedIn', url: LINKEDIN_URL, Icon: Briefcase, ok: result?.linkedin },
-                    { key: 'ig', label: 'Instagram', url: INSTAGRAM_URL, Icon: Camera, ok: result?.instagram },
-                  ].map(({ key, label, url, Icon, ok }) => (
+                    { key: 'li', label: 'LinkedIn', handle: 'InfusioTech Solutions', url: LINKEDIN_URL, Icon: LinkedInIcon, ok: result?.linkedin },
+                    { key: 'ig', label: 'Instagram', handle: '@infusiotechsolutions', url: INSTAGRAM_URL, Icon: InstagramIcon, ok: result?.instagram },
+                  ].map(({ key, label, handle, url, Icon, ok }) => (
                     <div className={`social-card${result && !ok ? ' bad' : ''}`} key={key}>
-                      <Icon size={22} /> <b>{label}</b>
-                      <a href={url} target="_blank" rel="noopener noreferrer">Open &amp; follow InfusioTech</a>
+                      <div className="social-head"><Icon /> <div><b>{label}</b><small>{handle}</small></div></div>
+
+                      <p className="social-step"><span className="step-n">1</span> <span className="step-text">Open our page and click <b>Follow</b></span></p>
+                      <a className={`follow-btn ${key}`} href={url} target="_blank" rel="noopener noreferrer" onClick={() => setOpened((o) => ({ ...o, [key]: true }))}>
+                        <Icon /> Open InfusioTech on {label} <ExternalLink size={16} />
+                      </a>
+                      {opened[key] && <small className="opened-note"><CheckCircle2 size={14} /> Opened in a new tab. Follow us there, then come back.</small>}
+
+                      <p className="social-step"><span className="step-n">2</span> <span className="step-text">Upload a screenshot showing &quot;Following&quot;</span></p>
                       <label className="upload">
                         <Upload size={16} /> {shots[key] ? 'Change screenshot' : 'Upload screenshot'}
                         <input type="file" accept="image/*" onChange={pickShot(key)} hidden />

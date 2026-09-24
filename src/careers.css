@@ -54,8 +54,30 @@
   .stepper li{ font-size: 12px; }
 }
 
-.social-card a{ font-size: 14px; }
 .social-card.bad{ border-color: #DC2626; }
+.social-card:hover{ transform: none; }
+.social-head{ display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.social-head > div{ display: flex; flex-direction: column; line-height: 1.25; }
+.social-head small{ color: var(--muted); font-size: 13px; }
+.social-card .social-head .brand-icon{ width: 26px; height: 26px; }
+.social-card:has(.follow-btn.li) .social-head .brand-icon{ color: #0A66C2; }
+.social-card:has(.follow-btn.ig) .social-head .brand-icon{ color: #E1306C; }
+.social-step{ display: flex; align-items: center; gap: 8px; margin: 12px 0 4px; font-size: 14px; color: var(--ink); }
+.social-card .step-n{ display: inline-grid; place-items: center; flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--accent2); color: #fff; font-size: 12px; font-weight: 700; }
+.follow-btn{ display: flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 16px; border-radius: 10px; color: #fff; font-size: 15px; font-weight: 600; text-align: center; box-shadow: var(--shadow); transition: transform .15s ease, filter .15s ease; }
+.follow-btn:hover{ color: #fff; text-decoration: none; transform: translateY(-1px); filter: brightness(1.08); }
+.follow-btn:focus-visible{ outline: 3px solid var(--accent2); outline-offset: 2px; }
+.social-card .follow-btn svg{ color: #fff; flex: none; }
+.follow-btn.li{ background: #0A66C2; }
+.follow-btn.ig{ background: linear-gradient(45deg, #F58529, #DD2A7B 55%, #8134AF); }
+.social-card .opened-note{ display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 13px; color: var(--accent2); }
+.social-card .opened-note svg{ color: var(--accent2); }
+.social-card .step-text{ color: var(--ink); font-size: 14px; }
+@media (max-width: 640px){
+  .enroll-panel{ padding: 20px 16px; }
+  .social-card{ padding: 16px 14px; }
+  .follow-btn{ padding: 12px; font-size: 14.5px; }
+}
 .upload{ display: inline-flex; align-items: center; gap: 8px; margin-top: 8px; padding: 9px 14px; border: 1px dashed var(--accent2); border-radius: 8px; cursor: pointer; font-size: 14px; color: var(--accent2); width: fit-content; }
 .upload:hover{ background: var(--accent2-soft); }
 .file-name{ font-size: 13px; color: var(--muted); word-break: break-all; }
