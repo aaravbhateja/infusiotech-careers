@@ -3,6 +3,9 @@ project_id = "infusiotech-careers"
 # Intern accounts are only created by the payment flow (admin API); nobody may self-sign-up.
 [auth]
 enable_signup = false
+# Password-reset links must point at the live site, not localhost.
+site_url = "https://infusiotech.careers"
+additional_redirect_urls = ["https://infusiotech.careers/**"]
 
 # Razorpay's webhook does not send a Supabase JWT; it is authenticated by its own signature instead.
 [functions.razorpay-webhook]
