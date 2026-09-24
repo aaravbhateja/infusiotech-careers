@@ -29,29 +29,26 @@ export async function makeLoi(a: any) {
   return { bytes, filename: `${a.first_name} ${a.last_name} - LOI.pdf`.replace(/[^\w .()-]/g, '') }
 }
 
+/** The Letter of Intent email. Portal login details go out separately in sendPortalMail. */
 // deno-lint-ignore no-explicit-any
-export async function sendMail(a: any, portal?: PortalAccess) {
+export async function sendMail(a: any) {
   const key = Deno.env.get('RESEND_API_KEY')
   const from = Deno.env.get('MAIL_FROM')
   if (!key || !from) throw new Error('Email is not configured (RESEND_API_KEY / MAIL_FROM)')
   const { bytes, filename } = await makeLoi(a)
   const reply = Deno.env.get('MAIL_REPLY_TO') ?? Deno.env.get('COMPANY_EMAIL') ?? 'infusiotech@gmail.com'
   const portalUrl = Deno.env.get('PORTAL_URL') ?? 'https://infusiotech.careers/portal'
-  const portalBlock = !portal ? '' : portal.password
-    ? loginBox(portal, portalUrl)
-    : p(`Your Intern Portal is at <a href="${esc(portalUrl)}" style="color:#2C8C82">${esc(portalUrl)}</a>. Sign in with your registered email and the password you set.`)
   const html = layout({
-    preheader: 'Your seat is confirmed. Your Letter of Intent and portal login are inside.',
+    preheader: 'Your seat is confirmed. Your Letter of Intent is attached.',
     heading: `Welcome to InfusioTech Careers, ${a.first_name}!`,
     body:
       p('Your payment has been received and your seat in the <b>3-Month Training + Internship Program</b> is confirmed. We\'re glad to have you on board.') +
       box(`<div style="font-weight:700;margin-bottom:4px">&#128206; Your Letter of Intent is attached</div>
         It has your program details, your reporting managers and the program terms. Please read it and <b>reply to this email with "I accept"</b>.`) +
-      portalBlock +
       `<div style="font:700 15px/1.4 'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#14202B;margin:8px 0 8px">What happens next</div>` +
       list([
         'Your program starts on your payment date, as stated in the letter.',
-        'Sign in to the Intern Portal to mark attendance, see tasks and watch lectures.',
+        'Your Intern Portal login ID and password arrive in a separate email. Use the portal to mark attendance, see tasks and watch lectures.',
         'We\'ll share the schedule and joining details by email.',
         'Keep following our <a href="https://www.linkedin.com/company/infusiotech-solutions/" style="color:#2C8C82">LinkedIn</a> and <a href="https://www.instagram.com/infusiotechsolutions/" style="color:#2C8C82">Instagram</a> for updates.',
       ]),
@@ -68,24 +65,42 @@ export async function sendMail(a: any, portal?: PortalAccess) {
   if (!res.ok) throw new Error(`Resend ${res.status}: ${(await res.text()).slice(0, 300)}`)
 }
 
+const errText = (e: unknown) => String(e instanceof Error ? e.message : e).slice(0, 500)
+
 /**
- * Sends the LOI to a paid applicant exactly once. The loi_sent_at column is claimed atomically
- * before sending, so the checkout callback and the webhook can't both send it. Failures release
- * the claim (and record the error) so a webhook redelivery or /resend-loi can retry.
+ * Sends a paid applicant their two welcome emails, each exactly once: the LOI (claimed via loi_sent_at)
+ * and then the portal login (claimed via portal_sent_at). Claims are atomic, so the checkout callback and
+ * the webhook can't both send. A failure releases only that email's claim and records the error in
+ * loi_error, so a webhook redelivery or /resend-loi retries just the email that failed.
  */
 export async function sendLoiOnce(applicantId: string) {
   const supabase = db()
   const { data: a } = await supabase.from('applicants')
     .update({ loi_sent_at: new Date().toISOString(), loi_error: null })
     .eq('id', applicantId).eq('status', 'paid').is('loi_sent_at', null).select('*').maybeSingle()
+  if (a) {
+    try {
+      await sendMail(a)
+    } catch (e) {
+      console.error('LOI email failed', e)
+      await supabase.from('applicants').update({ loi_sent_at: null, loi_error: errText(e) }).eq('id', applicantId)
+    }
+  }
+  await sendPortalOnce(applicantId)
+}
+
+async function sendPortalOnce(applicantId: string) {
+  const supabase = db()
+  const { data: a } = await supabase.from('applicants')
+    .update({ portal_sent_at: new Date().toISOString() })
+    .eq('id', applicantId).eq('status', 'paid').is('portal_sent_at', null).select('*').maybeSingle()
   if (!a) return
   try {
-    // Portal credentials go in the same email; if either step fails the claim is released so a retry redoes both.
-    await sendMail(a, await provisionPortalUser(a))
-    await supabase.from('applicants').update({ portal_sent_at: new Date().toISOString() }).eq('id', applicantId)
+    const access = await provisionPortalUser(a)
+    if (access.password) await sendPortalMail(a, access) // null = already set their own password, nothing to send
   } catch (e) {
-    console.error('LOI email failed', e)
-    await supabase.from('applicants').update({ loi_sent_at: null, loi_error: String(e instanceof Error ? e.message : e).slice(0, 500) }).eq('id', applicantId)
+    console.error('Portal email failed', e)
+    await supabase.from('applicants').update({ portal_sent_at: null, loi_error: `Portal: ${errText(e)}` }).eq('id', applicantId)
   }
 }
 
@@ -96,7 +111,7 @@ export async function completePayment(orderId: string, paymentId: string) {
   if (data) await sendLoiOnce(data.id)
 }
 
-/** Credentials-only email (no LOI) for paid interns who were enrolled before the portal existed. */
+/** Portal login email: sent after the LOI to every new intern, and by /send-portal-access to interns enrolled before the portal existed. */
 // deno-lint-ignore no-explicit-any
 export async function sendPortalMail(a: any, portal: PortalAccess) {
   const key = Deno.env.get('RESEND_API_KEY')
@@ -106,7 +121,7 @@ export async function sendPortalMail(a: any, portal: PortalAccess) {
   const reply = Deno.env.get('MAIL_REPLY_TO') ?? Deno.env.get('COMPANY_EMAIL') ?? 'infusiotech@gmail.com'
   const html = layout({
     preheader: 'Your login details for the InfusioTech Intern Portal.',
-    heading: `Your Intern Portal is live, ${a.first_name}!`,
+    heading: `Your Intern Portal login, ${a.first_name}`,
     body: p('Use the portal to mark your daily attendance, see your tasks, watch lectures, track your progress and view scheduled meetings.') + loginBox(portal, url),
     cta: { label: 'Sign in to the portal', url },
   }, reply)
